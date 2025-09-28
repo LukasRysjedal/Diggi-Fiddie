@@ -1,0 +1,45 @@
+-- Create the schema
+CREATE SCHEMA IF NOT EXISTS digital_fridge;
+
+-- Fridge table
+CREATE TABLE digital_fridge.kjøleskap (
+    id   SERIAL PRIMARY KEY,
+    navn VARCHAR(50) NOT NULL
+);
+
+-- Person table
+CREATE TABLE digital_fridge.person (
+    id   SERIAL PRIMARY KEY,
+    navn VARCHAR(30) NOT NULL,
+    tlf  VARCHAR(8)  NOT NULL
+);
+
+-- Membership table: links people to fridges
+CREATE TABLE digital_fridge.kjøleskap_medlem (
+    id           SERIAL PRIMARY KEY,
+    person_id    INTEGER NOT NULL,
+    kjøleskap_id INTEGER NOT NULL,
+    FOREIGN KEY (person_id)    REFERENCES digital_fridge.person(id),
+    FOREIGN KEY (kjøleskap_id) REFERENCES digital_fridge.kjøleskap(id)
+);
+
+-- Product table
+CREATE TABLE digital_fridge.produkt (
+    barcode      VARCHAR PRIMARY KEY,
+    navn         VARCHAR(40) NOT NULL,
+    bilde        TEXT,
+    utløpsdato   DATE
+);
+
+-- Inventory item table: which person put which product in which fridge
+CREATE TABLE digital_fridge.inventory_item (
+    person_id    INTEGER NOT NULL,
+    kjøleskap_id INTEGER NOT NULL,
+    barcode      VARCHAR NOT NULL,
+    utløpsdato   DATE,
+    PRIMARY KEY (person_id),
+    FOREIGN KEY (person_id)    REFERENCES digital_fridge.person(id),
+    FOREIGN KEY (kjøleskap_id) REFERENCES digital_fridge.kjøleskap(id),
+    FOREIGN KEY (barcode)      REFERENCES digital_fridge.produkt(barcode)
+);
+
